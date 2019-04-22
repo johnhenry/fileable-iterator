@@ -23,19 +23,25 @@ const iterator = async function* (element, {
             folder_context: '',
             template_context:''
     }) {
+
     element = await element;
+    if (!element) {
+        return;
+    }
     if (element.type && element.type['FILEABLE COMPONENT']) {
         yield* element.type({
             folder_context,
             template_context,
             ...element.props
         });
-    } else if (element.type === Symbol.for('react.fragment')) {
-        const children = Array.isArray(element.props.children)
-            ? element.props.children
-            : element.props.children
-            ? [element.props.children]
-            : [];
+    } else if (element.type === Symbol.for('react.fragment') || Array.isArray(element)) {
+        const children = Array.isArray(element)
+            ? element
+            : Array.isArray(element.props.children)
+                ? element.props.children
+                : element.props.children
+                    ? [element.props.children]
+                    : [];
         for (const child of children) {
             yield* iterator(child, {
                 folder_context,
